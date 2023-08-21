@@ -1,6 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import {filterImageFromURL, deleteLocalFiles} from './util/util';
+import {filterImageFromURL, deleteLocalFiles, isImageUrl} from './util/util';
 
 (async () => {
 
@@ -29,6 +29,22 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   /**************************************************************************** */
 
+  app.get( "/filteredimage", async ( req, res ) => {
+    console.log(req.query.image_url)
+    if(!isImageUrl(req.query.image_url)) {
+      res.status(400).send('not a valid url. please try again!')
+    }
+    const resizePath = await filterImageFromURL(req.query.image_url)
+    res.status(200).sendFile(resizePath, err => {
+      if(err) {
+        console.log(err)
+        res.sendStatus(500)
+      }
+
+      deleteLocalFiles([resizePath])
+    })
+  });
+
   //! END @TODO1
   
   // Root Endpoint
@@ -36,7 +52,6 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   app.get( "/", async ( req, res ) => {
     res.send("try GET /filteredimage?image_url={{}}")
   } );
-  
 
   // Start the Server
   app.listen( port, () => {

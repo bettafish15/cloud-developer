@@ -37,3 +37,7 @@ export async function deleteLocalFiles(files: Array<string>) {
     fs.unlinkSync(file);
   }
 }
+
+export function isImageUrl(url: string): boolean {
+  return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url);
+}
