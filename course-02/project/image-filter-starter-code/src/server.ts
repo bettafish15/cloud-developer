@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles, isImageUrl} from './util/util';
 
@@ -9,7 +9,7 @@ import {filterImageFromURL, deleteLocalFiles, isImageUrl} from './util/util';
 
   // Set the network port
   const port = process.env.PORT || 8082;
-  
+
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
 
@@ -29,12 +29,12 @@ import {filterImageFromURL, deleteLocalFiles, isImageUrl} from './util/util';
 
   /**************************************************************************** */
 
-  app.get( "/filteredimage", async ( req, res ) => {
+  app.get( "/filteredimage", async ( req: Request, res: Response ) => {
     console.log(req.query.image_url)
     if(!isImageUrl(req.query.image_url)) {
       res.status(400).send('not a valid url. please try again!')
     }
-    const resizePath = await filterImageFromURL(req.query.image_url)
+    const resizePath: string = await filterImageFromURL(req.query.image_url)
     res.status(200).sendFile(resizePath, err => {
       if(err) {
         console.log(err)
@@ -46,7 +46,7 @@ import {filterImageFromURL, deleteLocalFiles, isImageUrl} from './util/util';
   });
 
   //! END @TODO1
-  
+
   // Root Endpoint
   // Displays a simple message to the user
   app.get( "/", async ( req, res ) => {
